@@ -1,0 +1,28 @@
+[package]
+name           = "prometheus_folder_size_exporter"
+version        = "0.1.0"
+authors        = ["Francesco Cogno <francesco.cogno@outlook.com>"]
+description    = "Prometheus Folder Size Exporter"
+edition        = "2018"
+
+readme         = "README.md"
+license        = "MIT"
+repository     = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
+documentation  = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
+homepage       = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
+
+keywords       = ["prometheus", "exporter", "filesystem", "size", "folder"]
+categories     = ["api-bindings"]
+
+
+[dependencies]
+log            = "*"
+env_logger     = "*"
+futures        = "*"
+clap           = "*"
+serde_json     = "*"
+serde          = "*"
+serde_derive   = "*"
+failure        = "*"
+hyper          = "*"
+http           = "*"
