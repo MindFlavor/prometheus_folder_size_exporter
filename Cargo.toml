@@ -16,13 +16,13 @@ categories     = ["api-bindings"]
 
 
 [dependencies]
-log            = "*"
-env_logger     = "*"
-futures        = "*"
-clap           = "*"
-serde_json     = "*"
-serde          = "*"
-serde_derive   = "*"
-failure        = "*"
-hyper          = "*"
-http           = "*"
+log            = "0.4.6"
+env_logger     = "0.6.0"
+futures        = "0.1.25"
+clap           = "2.32.0"
+serde_json     = "1.0.37"
+serde          = "1.0.85"
+serde_derive   = "1.0.85"
+failure        = "0.1.5"
+hyper          = "0.12.23"
+http           = "0.1.15"
