@@ -67,7 +67,7 @@ fn perform_request(
             let mut s = String::with_capacity(1024);
             for result in v_sizes {
                 s.push_str(&format!(
-                    "folder_size{{path=\"{}\",recursive=\"{}\"}, user=\"{}\"}} {}\n",
+                    "folder_size{{path=\"{}\",recursive=\"{}\", user=\"{}\"}} {}\n",
                     result.folder.path,  result.folder.recursive, result.folder.user, result.size
                 ));
             }

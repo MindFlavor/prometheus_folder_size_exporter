@@ -11,17 +11,17 @@ pub(crate) struct FolderToScan {
 
 impl FolderToScan {
     pub fn scan(&self) -> Result<u64, std::io::Error> {
-        scan_folder(Path::new(&self.path), self.recursive, self.user)
+        scan_folder(Path::new(&self.path), self.recursive, &String::from(&self.user))
     }
 }
 
 #[inline]
-fn scan_folder(dir: &Path, is_recursive: bool, user: String) -> Result<u64, std::io::Error> {
+fn scan_folder(dir: &Path, is_recursive: bool, user: &String) -> Result<u64, std::io::Error> {
     let mut tot: u64 = 0;
     for entry in read_dir(dir)? {
         let entry = entry?;
         if entry.file_type()?.is_dir() && is_recursive {
-            tot += scan_folder(&entry.path(), is_recursive)?;
+            tot += scan_folder(&entry.path(), is_recursive, user)?;
         } else {
             tot += entry.metadata()?.len();
         }
