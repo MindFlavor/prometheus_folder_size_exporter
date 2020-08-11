@@ -67,8 +67,8 @@ fn perform_request(
             let mut s = String::with_capacity(1024);
             for result in v_sizes {
                 s.push_str(&format!(
-                    "folder_size{{path=\"{}\",recursive=\"{}\"}} {}\n",
-                    result.folder.path, result.folder.recursive, result.size
+                    "folder_size{{path=\"{}\",recursive=\"{}\"}, user=\"{}\"}} {}\n",
+                    result.folder.path,  result.folder.recursive, result.folder.user, result.size
                 ));
             }
 
@@ -78,8 +78,8 @@ fn perform_request(
 
 fn main() {
     let matches = clap::App::new("prometheus_folder_size_exporter")
-        .version("0.1")
-        .author("Francesco Cogno <francesco.cogno@outlook.com>")
+        .version("0.1.1")
+        .author("Francesco Cogno <francesco.cogno@outlook.com>  & Guido Scatena <guido.scatena@unipi.it>")
         .arg(
             Arg::with_name("port")
                 .short("p")

@@ -6,16 +6,17 @@ use std::path::Path;
 pub(crate) struct FolderToScan {
     pub(crate) path: String,
     pub(crate) recursive: bool,
+    pub(crate) user: String,
 }
 
 impl FolderToScan {
     pub fn scan(&self) -> Result<u64, std::io::Error> {
-        scan_folder(Path::new(&self.path), self.recursive)
+        scan_folder(Path::new(&self.path), self.recursive, self.user)
     }
 }
 
 #[inline]
-fn scan_folder(dir: &Path, is_recursive: bool) -> Result<u64, std::io::Error> {
+fn scan_folder(dir: &Path, is_recursive: bool, user: String) -> Result<u64, std::io::Error> {
     let mut tot: u64 = 0;
     for entry in read_dir(dir)? {
         let entry = entry?;
@@ -74,9 +75,9 @@ mod tests {
     fn test_parse() {
         let s = "
 		  	 [
-		  		 { \"path\": \"pippo\", \"recursive\": true },
-		  		 { \"path\": \"pluto\", \"recursive\": true }, 
-		  		 { \"path\": \"paperino\", \"recursive\": false } 
+		  		 { \"path\": \"pippo\", \"recursive\": true, \"user\": \"pippo\" },
+		  		 { \"path\": \"pluto\", \"recursive\": true , \"user\": \"pluto\"}, 
+		  		 { \"path\": \"paperino\", \"recursive\": false , \"user\": \"paperino\"} 
 		  	]
 		  ";
 
@@ -85,6 +86,7 @@ mod tests {
         assert_eq!(dresp.folders().len(), 3);
         assert_eq!(dresp.folders()[0].recursive, true);
         assert_eq!(dresp.folders()[2].path, "paperino");
+        assert_eq!(dresp.folders()[2].user, "paperino");
     }
 
 }

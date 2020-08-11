@@ -1,15 +1,15 @@
 [package]
 name           = "prometheus_folder_size_exporter"
-version        = "0.1.0"
-authors        = ["Francesco Cogno <francesco.cogno@outlook.com>"]
+version        = "0.1.1"
+authors        = ["Francesco Cogno <francesco.cogno@outlook.com>", "Guido Scatena <guido.scatena@unipi.it>"]
 description    = "Prometheus Folder Size Exporter"
-edition        = "2018"
+edition        = "2020"
 
 readme         = "README.md"
 license        = "MIT"
-repository     = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
-documentation  = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
-homepage       = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
+repository     = "https://github.com/scatenag/prometheus_folder_size_exporter"
+documentation  = "https://github.com/scatenag/prometheus_folder_size_exporter"
+homepage       = "https://github.com/scatenag/prometheus_folder_size_exporter"
 
 keywords       = ["prometheus", "exporter", "filesystem", "size", "folder"]
 categories     = ["api-bindings"]
