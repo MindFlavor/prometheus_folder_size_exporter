@@ -7,9 +7,9 @@ edition        = "2018"
 
 readme         = "README.md"
 license        = "MIT"
-repository     = "https://github.com/scatenag/prometheus_folder_size_exporter"
-documentation  = "https://github.com/scatenag/prometheus_folder_size_exporter"
-homepage       = "https://github.com/scatenag/prometheus_folder_size_exporter"
+repository     = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
+documentation  = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
+homepage       = "https://github.com/MindFlavor/prometheus_folder_size_exporter"
 
 keywords       = ["prometheus", "exporter", "filesystem", "size", "folder"]
 categories     = ["api-bindings"]
