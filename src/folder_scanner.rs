@@ -1,4 +1,4 @@
-use log::{debug, error, info, trace, warn};
+use log::{debug, trace};
 use std::fs::read_dir;
 use std::path::Path;
 
@@ -11,20 +11,19 @@ pub(crate) struct FolderToScan {
 
 impl FolderToScan {
     pub fn scan(&self) -> Result<u64, std::io::Error> {
-        scan_folder(Path::new(&self.path), self.recursive, self.user.as_ref())
+        scan_folder(
+            Path::new(&self.path),
+            self.recursive,
+            match &self.user {
+                Some(user) => Some(user as &str),
+                None => None,
+            },
+        )
     }
 }
 
 #[inline]
-fn scan_folder<STR>(
-    dir: &Path,
-    is_recursive: bool,
-    user: Option<STR>,
-) -> Result<u64, std::io::Error>
-where
-    STR: AsRef<str>,
-{
-    let user = user.as_ref();
+fn scan_folder(dir: &Path, is_recursive: bool, user: Option<&str>) -> Result<u64, std::io::Error> {
     let mut tot: u64 = 0;
 
     for entry in read_dir(dir)? {
