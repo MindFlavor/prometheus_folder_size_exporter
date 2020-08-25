@@ -66,10 +66,17 @@ fn perform_request(
         .and_then(|v_sizes| {
             let mut s = String::with_capacity(1024);
             for result in v_sizes {
-                s.push_str(&format!(
-                    "folder_size{{path=\"{}\",recursive=\"{}\", user=\"{}\"}} {}\n",
-                    result.folder.path,  result.folder.recursive, result.folder.user, result.size
-                ));
+                if let Some(user) = result.folder.user {
+                    s.push_str(&format!(
+                        "folder_size{{path=\"{}\",recursive=\"{}\", user=\"{}\"}} {}\n",
+                        result.folder.path, result.folder.recursive, user, result.size
+                    ));
+                } else {
+                    s.push_str(&format!(
+                        "folder_size{{path=\"{}\",recursive=\"{}\"}} {}\n",
+                        result.folder.path, result.folder.recursive, result.size
+                    ));
+                }
             }
 
             ok(Response::new(Body::from(s)))
