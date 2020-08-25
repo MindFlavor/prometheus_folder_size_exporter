@@ -1,7 +1,7 @@
 [package]
 name           = "prometheus_folder_size_exporter"
-version        = "0.1.0"
-authors        = ["Francesco Cogno <francesco.cogno@outlook.com>"]
+version        = "0.1.1"
+authors        = ["Francesco Cogno <francesco.cogno@outlook.com>", "Guido Scatena <guido.scatena@unipi.it>"]
 description    = "Prometheus Folder Size Exporter"
 edition        = "2018"
 

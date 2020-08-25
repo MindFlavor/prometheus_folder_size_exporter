@@ -1,4 +1,4 @@
 [
-  { "path": "/home/mindflavor", "recursive": true },
-  { "path": "/home/mindflavor/.cargo", "recursive": false }
+  { "path": "/home/mindflavor", "recursive": true, "user":  "mindflavor"},
+  { "path": "/home/mindflavor/.cargo", "recursive": false , "user":  "mindflavor"}
 ]
