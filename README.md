@@ -4,9 +4,9 @@
 
 [![Crate](https://img.shields.io/crates/v/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratedown](https://img.shields.io/crates/d/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratelastdown](https://img.shields.io/crates/dv/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter)
 
-[![tag](https://img.shields.io/github/tag/mindflavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/tree/0.1.0)
-[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/tree/0.1.0)
-[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.1.0.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.1.0.svg)
+[![tag](https://img.shields.io/github/tag/mindflavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/tree/0.1.1)
+[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/tree/0.1.1)
+[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.1.1.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.1.1.svg)
 
 ## Intro
 
@@ -14,7 +14,7 @@ A Rust Prometheus exporter for folder size. This tool exports the folder size in
 
 ## Prerequisites 
 
-* You need [Rust](https://www.rust-lang.org/) to compile this code. Simply follow the instructions on Rust's website to install the toolchain. If you get wierd errors while compiling please try and update your Rust version first (I have developed it on `rustc 1.33.0-nightly (ceb251214 2019-01-16)`). 
+* You need [Rust](https://www.rust-lang.org/) to compile this code. Simply follow the instructions on Rust's website to install the toolchain. If you get wierd errors while compiling please try and update your Rust version first (I have developed it on `rustc 1.47.0-nightly (663d2f5cd 2020-08-22)`). 
 
 ## Compilation
 
@@ -46,7 +46,7 @@ Once started, the tool will listen on the specified port (or the default one, 99
 
 ### JSON configuration file
 
-The json is very simple, it's just an array of obejcts with two mandatory fields: `path` and `recursive`. `path` can be any valid path while `recursive` can be either `true` or `false`. If you specify `true`, the exporter will scan the folder contents recursively effectively giving you the folder tree size. For an example please refer to [example.json](example.json). 
+The json is very simple, it's just an array of obejcts with two mandatory fields: `path` and `recursive` and one optional `user`. `path` can be any valid path while `recursive` can be either `true` or `false`. If you specify `true`, the exporter will scan the folder contents recursively effectively giving you the folder tree size. `user` is an optional arbitrary label that will be passed to the output. For an example please refer to [example.json](example.json). 
 
 ### Systemd service file
 

@@ -2,7 +2,6 @@
 extern crate serde_derive;
 #[macro_use]
 extern crate failure;
-use clap;
 use clap::Arg;
 use futures::future::{done, ok, Future};
 use http::StatusCode;
@@ -14,10 +13,8 @@ mod options;
 use options::Options;
 mod exporter_error;
 use exporter_error::ExporterError;
-mod render_to_prometheus;
-use render_to_prometheus::RenderToPrometheus;
 mod folder_scanner;
-use folder_scanner::FolderToScan;
+mod render_to_prometheus;
 
 fn handle_request(
     req: Request<Body>,
@@ -28,7 +25,7 @@ fn handle_request(
     perform_request(req, options).then(|res| match res {
         Ok(body) => ok(body),
         Err(inner_error) => match inner_error {
-            ExporterError::UnsupportedPathError { path: ref _path } => {
+            ExporterError::UnsupportedPath { path: ref _path } => {
                 warn!("{:?}", inner_error);
                 let r = Response::builder()
                     .status(StatusCode::NOT_FOUND)
@@ -36,7 +33,7 @@ fn handle_request(
                     .unwrap();
                 ok(r)
             }
-            ExporterError::UnsupportedMethodError { verb: ref _verb } => {
+            ExporterError::UnsupportedMethod { verb: ref _verb } => {
                 warn!("{:?}", inner_error);
                 let r = Response::builder()
                     .status(StatusCode::METHOD_NOT_ALLOWED)
@@ -66,10 +63,18 @@ fn perform_request(
         .and_then(|v_sizes| {
             let mut s = String::with_capacity(1024);
             for result in v_sizes {
-                s.push_str(&format!(
-                    "folder_size{{path=\"{}\",recursive=\"{}\", user=\"{}\"}} {}\n",
-                    result.folder.path,  result.folder.recursive, result.folder.user, result.size
-                ));
+                if let Some(user) = result.folder.user {
+                    s.push_str(&format!(
+                        "folder_size{{path=\"{}\",recursive=\"{}\",user=\"{}\"}} {}\n",
+                        result.folder.path, result.folder.recursive, user, result.size
+                    ));
+                } else {
+                    s.push_str(&format!(
+                        "folder_size{{path=\"{}\",recursive=\"{}\"}} {}\n",
+                        result.folder.path, result.folder.recursive, result.size
+                    ));
+                }
+                debug!("s now == {}", s);
             }
 
             ok(Response::new(Body::from(s)))

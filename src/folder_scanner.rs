@@ -1,4 +1,4 @@
-use log::{debug, error, info, trace, warn};
+use log::{debug, trace};
 use std::fs::read_dir;
 use std::path::Path;
 
@@ -6,18 +6,26 @@ use std::path::Path;
 pub(crate) struct FolderToScan {
     pub(crate) path: String,
     pub(crate) recursive: bool,
-    pub(crate) user: String,
+    pub(crate) user: Option<String>,
 }
 
 impl FolderToScan {
     pub fn scan(&self) -> Result<u64, std::io::Error> {
-        scan_folder(Path::new(&self.path), self.recursive, &String::from(&self.user))
+        scan_folder(
+            Path::new(&self.path),
+            self.recursive,
+            match &self.user {
+                Some(user) => Some(user as &str),
+                None => None,
+            },
+        )
     }
 }
 
 #[inline]
-fn scan_folder(dir: &Path, is_recursive: bool, user: &String) -> Result<u64, std::io::Error> {
+fn scan_folder(dir: &Path, is_recursive: bool, user: Option<&str>) -> Result<u64, std::io::Error> {
     let mut tot: u64 = 0;
+
     for entry in read_dir(dir)? {
         let entry = entry?;
         if entry.file_type()?.is_dir() && is_recursive {
@@ -77,7 +85,7 @@ mod tests {
 		  	 [
 		  		 { \"path\": \"pippo\", \"recursive\": true, \"user\": \"pippo\" },
 		  		 { \"path\": \"pluto\", \"recursive\": true , \"user\": \"pluto\"}, 
-		  		 { \"path\": \"paperino\", \"recursive\": false , \"user\": \"paperino\"} 
+		  		 { \"path\": \"paperino\", \"recursive\": false } 
 		  	]
 		  ";
 
@@ -85,8 +93,8 @@ mod tests {
 
         assert_eq!(dresp.folders().len(), 3);
         assert_eq!(dresp.folders()[0].recursive, true);
+        assert_eq!(dresp.folders()[1].user, Some("pluto".to_owned()));
         assert_eq!(dresp.folders()[2].path, "paperino");
-        assert_eq!(dresp.folders()[2].user, "paperino");
+        assert_eq!(dresp.folders()[2].user, None);
     }
-
 }
