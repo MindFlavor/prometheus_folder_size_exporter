@@ -1,4 +1,6 @@
 [
-  { "path": "/home/mindflavor/OneDrive", "recursive": true, "user":  "mindflavor"},
-  { "path": "/home/mindflavor/.cargo", "recursive": false }
+  { "path": "/home/MINDFLAVOR/mindflavor/Documents", "recurse_type": "Sum", "user":  "mindflavor" },
+  { "path": "/tmp/test", "recurse_type": "Explode" },
+  { "path": "/home/MINDFLAVOR/mindflavor/.cargo", "recurse_type": "None" },
+  { "path": "/home/MINDFLAVOR/mindflavor/.cargo", "recurse_type": "Sum" }
 ]

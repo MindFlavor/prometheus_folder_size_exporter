@@ -1,11 +1,5 @@
 #[derive(Debug, Fail)]
 pub(crate) enum ExporterError {
-    #[fail(display = "Unsupported path {}. Only /metrics is supported", path)]
-    UnsupportedPath { path: String },
-
-    #[fail(display = "Unsupported verb {}. Only GET is supported", verb)]
-    UnsupportedMethod { verb: String },
-
     #[fail(display = "Hyper error: {}", e)]
     Hyper { e: hyper::error::Error },
 
