@@ -142,19 +142,19 @@ mod tests {
 		  		 { \"path\": \"pippo\", \"recurse_type\": \"Sum\", \"user\": \"pippo\" },
 		  		 { \"path\": \"pluto\", \"recurse_type\": \"None\" , \"user\": \"pluto\"}, 
 		  		 { \"path\": \"paperino\", \"recurse_type\": \"Explode\" },
-		  		 { \"path\": \"other\" } 
+		  		 { \"path\": \"other\", \"recurse_type\": \"None\" } 
 		  	]
 		  ";
 
         let dresp: FolderScanner = FolderScanner::from_json(s).unwrap();
 
         assert_eq!(dresp.folders().len(), 4);
-        assert_eq!(dresp.folders()[0].recurse_type, Some(RecurseType::Sum));
+        assert_eq!(dresp.folders()[0].recurse_type, RecurseType::Sum);
         assert_eq!(dresp.folders()[1].user, Some("pluto".to_owned()));
-        assert_eq!(dresp.folders()[1].recurse_type, Some(RecurseType::None));
+        assert_eq!(dresp.folders()[1].recurse_type, RecurseType::None);
         assert_eq!(dresp.folders()[2].path, "paperino");
         assert_eq!(dresp.folders()[2].user, None);
-        assert_eq!(dresp.folders()[2].recurse_type, Some(RecurseType::Explode));
-        assert_eq!(dresp.folders()[3].recurse_type, None);
+        assert_eq!(dresp.folders()[2].recurse_type, RecurseType::Explode);
+        assert_eq!(dresp.folders()[3].recurse_type, RecurseType::None);
     }
 }
