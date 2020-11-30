@@ -1,40 +1,95 @@
-use log::{debug, trace};
 use std::fs::read_dir;
-use std::path::Path;
+
+#[derive(Debug, Clone, Copy, Deserialize, PartialEq, Eq)]
+pub(crate) enum RecurseType {
+    None,
+    Sum,
+    Explode,
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub(crate) struct FolderToScan {
     pub(crate) path: String,
-    pub(crate) recursive: bool,
+    pub(crate) recurse_type: RecurseType,
     pub(crate) user: Option<String>,
 }
 
-impl FolderToScan {
-    pub fn scan(&self) -> Result<u64, std::io::Error> {
-        scan_folder(
-            Path::new(&self.path),
-            self.recursive,
-            match &self.user {
-                Some(user) => Some(user as &str),
-                None => None,
-            },
-        )
-    }
-}
-
 #[inline]
-fn scan_folder(dir: &Path, is_recursive: bool, user: Option<&str>) -> Result<u64, std::io::Error> {
+fn scan_folder_explode(
+    folder_to_scan: &FolderToScan,
+) -> Result<Vec<FolderWithSize>, std::io::Error> {
+    log::trace!("scan_folder_explode({:?})", &folder_to_scan);
     let mut tot: u64 = 0;
+    let mut v = Vec::new();
 
-    for entry in read_dir(dir)? {
+    for entry in read_dir(&folder_to_scan.path)? {
         let entry = entry?;
-        if entry.file_type()?.is_dir() && is_recursive {
-            tot += scan_folder(&entry.path(), is_recursive, user)?;
+
+        let folder_inner = FolderToScan {
+            path: entry.path().to_str().unwrap().to_owned(),
+            recurse_type: folder_to_scan.recurse_type,
+            user: folder_to_scan.user.to_owned(),
+        };
+
+        if entry.file_type()?.is_dir() {
+            v.extend_from_slice(&scan_folder_explode(&folder_inner)?);
         } else {
             tot += entry.metadata()?.len();
         }
     }
-    Ok(tot)
+
+    v.push(FolderWithSize {
+        folder: folder_to_scan.to_owned(),
+        size: tot,
+    });
+
+    Ok(v)
+}
+
+#[inline]
+fn scan_folder_sum(folder_to_scan: &FolderToScan) -> Result<FolderWithSize, std::io::Error> {
+    log::trace!("scan_folder_sum({:?})", &folder_to_scan);
+    let mut tot: u64 = 0;
+
+    for entry in read_dir(&folder_to_scan.path)? {
+        let entry = entry?;
+
+        let folder_inner = FolderToScan {
+            path: entry.path().to_str().unwrap().to_owned(),
+            recurse_type: folder_to_scan.recurse_type,
+            user: folder_to_scan.user.to_owned(),
+        };
+
+        if entry.file_type()?.is_dir() {
+            tot += scan_folder_sum(&folder_inner)?.size;
+        } else {
+            tot += entry.metadata()?.len();
+        }
+    }
+
+    Ok(FolderWithSize {
+        folder: folder_to_scan.to_owned(),
+        size: tot,
+    })
+}
+
+#[inline]
+fn scan_folder_simple(folder_to_scan: &FolderToScan) -> Result<FolderWithSize, std::io::Error> {
+    log::trace!("scan_folder_simple({:?})", &folder_to_scan);
+
+    let mut tot: u64 = 0;
+
+    for entry in read_dir(&folder_to_scan.path)? {
+        let entry = entry?;
+        if !entry.file_type()?.is_dir() {
+            tot += entry.metadata()?.len();
+        }
+    }
+
+    Ok(FolderWithSize {
+        folder: folder_to_scan.to_owned(),
+        size: tot,
+    })
 }
 
 #[derive(Debug, Clone)]
@@ -49,6 +104,7 @@ pub(crate) struct FolderScanner {
 }
 
 impl FolderScanner {
+    #[allow(dead_code)]
     pub fn folders(&self) -> &[FolderToScan] {
         &self.folders
     }
@@ -63,13 +119,13 @@ impl FolderScanner {
         let mut v_sizes = Vec::new();
 
         for folder in &self.folders {
-            trace!("scanning folder {:?}", folder);
-            let size = folder.scan()?;
-            debug!("folder {:?}, size == {}", folder, size);
-            v_sizes.push(FolderWithSize {
-                folder: folder.clone(),
-                size,
-            });
+            log::trace!("scanning folder {:?}", folder);
+
+            match folder.recurse_type {
+                RecurseType::Sum => v_sizes.push(scan_folder_sum(&folder)?),
+                RecurseType::Explode => v_sizes.extend_from_slice(&scan_folder_explode(&folder)?),
+                RecurseType::None => v_sizes.push(scan_folder_simple(&folder)?),
+            }
         }
         Ok(v_sizes)
     }
@@ -83,18 +139,22 @@ mod tests {
     fn test_parse() {
         let s = "
 		  	 [
-		  		 { \"path\": \"pippo\", \"recursive\": true, \"user\": \"pippo\" },
-		  		 { \"path\": \"pluto\", \"recursive\": true , \"user\": \"pluto\"}, 
-		  		 { \"path\": \"paperino\", \"recursive\": false } 
+		  		 { \"path\": \"pippo\", \"recurse_type\": \"Sum\", \"user\": \"pippo\" },
+		  		 { \"path\": \"pluto\", \"recurse_type\": \"None\" , \"user\": \"pluto\"}, 
+		  		 { \"path\": \"paperino\", \"recurse_type\": \"Explode\" },
+		  		 { \"path\": \"other\" } 
 		  	]
 		  ";
 
         let dresp: FolderScanner = FolderScanner::from_json(s).unwrap();
 
-        assert_eq!(dresp.folders().len(), 3);
-        assert_eq!(dresp.folders()[0].recursive, true);
+        assert_eq!(dresp.folders().len(), 4);
+        assert_eq!(dresp.folders()[0].recurse_type, Some(RecurseType::Sum));
         assert_eq!(dresp.folders()[1].user, Some("pluto".to_owned()));
+        assert_eq!(dresp.folders()[1].recurse_type, Some(RecurseType::None));
         assert_eq!(dresp.folders()[2].path, "paperino");
         assert_eq!(dresp.folders()[2].user, None);
+        assert_eq!(dresp.folders()[2].recurse_type, Some(RecurseType::Explode));
+        assert_eq!(dresp.folders()[3].recurse_type, None);
     }
 }
