@@ -23,7 +23,7 @@ async fn perform_request(
         .with_name("folder_size")
         .with_metric_type(MetricType::Counter)
         .with_help(
-            "Size of the folder, including the subfolders is the label recurse_type is \"Sum\"",
+            "Size of the folder, including the subfolders if \"explode_depth\" is zero and \"sum_remaining_subfolders\" is true" 
         )
         .build();
 
@@ -33,8 +33,12 @@ async fn perform_request(
                 &PrometheusInstance::new()
                     .with_label("path", result.folder.path.as_str())
                     .with_label(
-                        "recurse_type",
-                        format!("{:?}", result.folder.recurse_type).as_str(),
+                        "explode_depth",
+                        format!("{:?}", result.folder.explode_depth).as_str(),
+                    )
+                    .with_label(
+                        "sum_remaining_subfolders",
+                        format!("{}", result.folder.sum_remaining_subfolders).as_str(),
                     )
                     .with_label("user", user.as_str())
                     .with_value(result.size),
@@ -44,8 +48,12 @@ async fn perform_request(
                 &PrometheusInstance::new()
                     .with_label("path", result.folder.path.as_str())
                     .with_label(
-                        "recurse_type",
-                        format!("{:?}", result.folder.recurse_type).as_str(),
+                        "explode_depth",
+                        format!("{:?}", result.folder.explode_depth).as_str(),
+                    )
+                    .with_label(
+                        "sum_remaining_subfolders",
+                        format!("{}", result.folder.sum_remaining_subfolders).as_str(),
                     )
                     .with_value(result.size),
             );
