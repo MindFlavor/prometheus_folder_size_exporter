@@ -1,12 +1,12 @@
 # Prometheus Folder size Exporter
 
-[![legal](https://img.shields.io/github/license/mindflavor/prometheus_folder_size_exporter.svg)](LICENSE)  [![alpha](https://img.shields.io/badge/stability-alpha-yellow.svg)](https://img.shields.io/badge/stability-alpha-yellow.svg)
+[![legal](https://img.shields.io/github/license/mindflavor/prometheus_folder_size_exporter.svg)](LICENSE) 
+![Rust](https://github.com/MindFlavor/prometheus_folder_size_exporter/workflows/Rust/badge.svg)
 
 [![Crate](https://img.shields.io/crates/v/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratedown](https://img.shields.io/crates/d/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratelastdown](https://img.shields.io/crates/dv/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter)
 
-[![tag](https://img.shields.io/github/tag/mindflavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/tree/0.1.1)
-[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/tree/0.1.1)
-[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.1.1.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.1.1.svg)
+[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/releases/tag/0.3.0)
+[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.3.0.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.3.0.svg)
 
 ## Intro
 
@@ -46,7 +46,14 @@ Once started, the tool will listen on the specified port (or the default one, 99
 
 ### JSON configuration file
 
-The json is very simple, it's just an array of obejcts with two mandatory fields: `path` and `recursive` and one optional `user`. `path` can be any valid path while `recursive` can be either `true` or `false`. If you specify `true`, the exporter will scan the folder contents recursively effectively giving you the folder tree size. `user` is an optional arbitrary label that will be passed to the output. For an example please refer to [example.json](example.json). 
+Name | Valid values | Description
+-- | -- | --
+`path` | Any valid path | The starting analysis path.
+`explode_depth` | Any positive number or -1 | This setting controls how deep the folder explosion will go. -1 means no limit. 0 means no explosion.
+`sum_remaining_subfolders` | `true` or `false` | This setting specifies if the last exploded folder size should include the subfolders. 
+
+So, for example, to monitor a single folder set `explode_depth = 0` and pick `sum_remaining_subfolders` based on is you want the total folder + subfolder size or not.
+To monitor a folder and its first level subfolders you specify `explode_depth = 1`.
 
 ### Systemd service file
 
