@@ -1,6 +1,5 @@
 [
-  { "path": "/home/MINDFLAVOR/mindflavor/Documents", "recurse_type": "Sum", "user":  "mindflavor" },
-  { "path": "/tmp/test", "recurse_type": "Explode" },
-  { "path": "/home/MINDFLAVOR/mindflavor/.cargo", "recurse_type": "None" },
-  { "path": "/home/MINDFLAVOR/mindflavor/.cargo", "recurse_type": "Sum" }
+  { "path": "/home/MINDFLAVOR/mindflavor/Documents", "explode_depth": 0, "sum_remaining_subfolders": false  },
+  { "path": "/tmp/test", "explode_depth": 1, "sum_remaining_subfolders": true, "user": "mindflavor" },
+  { "path": "/home/MINDFLAVOR/mindflavor/.cargo", "explode_depth": 2, "sum_remaining_subfolders": false }
 ]
