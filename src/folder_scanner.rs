@@ -136,22 +136,20 @@ mod tests {
     fn test_parse() {
         let s = "
 		  	 [
-		  		 { \"path\": \"pippo\", \"recurse_type\": \"Sum\", \"user\": \"pippo\" },
-		  		 { \"path\": \"pluto\", \"recurse_type\": \"None\" , \"user\": \"pluto\"}, 
-		  		 { \"path\": \"paperino\", \"recurse_type\": \"Explode\" },
-		  		 { \"path\": \"other\", \"recurse_type\": \"None\" } 
+		  		 { \"path\": \"pippo\", \"explode_depth\": 5, \"sum_remaining_subfolders\": true, \"user\": \"pippo\" },
+		  		 { \"path\": \"pluto\", \"explode_depth\": -1, \"sum_remaining_subfolders\": true, \"user\": \"pluto\"}, 
+		  		 { \"path\": \"paperino\", \"explode_depth\": 0, \"sum_remaining_subfolders\": false },
+		  		 { \"path\": \"other\", \"explode_depth\": 10, \"sum_remaining_subfolders\": true } 
 		  	]
 		  ";
 
         let dresp: FolderScanner = FolderScanner::from_json(s).unwrap();
 
         assert_eq!(dresp.folders().len(), 4);
-        assert_eq!(dresp.folders()[0].recurse_type, RecurseType::Sum);
+        assert_eq!(dresp.folders()[0].explode_depth, 5);
         assert_eq!(dresp.folders()[1].user, Some("pluto".to_owned()));
-        assert_eq!(dresp.folders()[1].recurse_type, RecurseType::None);
+        assert_eq!(dresp.folders()[1].sum_remaining_subfolders, true);
         assert_eq!(dresp.folders()[2].path, "paperino");
         assert_eq!(dresp.folders()[2].user, None);
-        assert_eq!(dresp.folders()[2].recurse_type, RecurseType::Explode);
-        assert_eq!(dresp.folders()[3].recurse_type, RecurseType::None);
     }
 }
