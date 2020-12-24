@@ -14,13 +14,23 @@ mod exporter_error;
 mod folder_scanner;
 mod render_to_prometheus;
 use prometheus_exporter_base::prelude::*;
+use std::time::Duration;
 
 async fn perform_request(
     _req: http::request::Request<Body>,
     state: Arc<Arc<State>>,
 ) -> Result<String, failure::Error> {
     let results = if state.options.background_poll_seconds.is_some() {
-        state.shared_vec.read().unwrap().clone()
+        // loop until we have some data.
+        // This is needed because the first scan can take a lot of time
+        // and we must block until we have something. It will happen only
+        // at startup though.
+        let mut results = state.shared_vec.read().unwrap().clone();
+        while results.is_empty() {
+            std::thread::sleep(Duration::from_millis(100));
+            results = state.shared_vec.read().unwrap().clone();
+        }
+        results
     } else {
         state.options.folders_to_scan.scan()?
     };
