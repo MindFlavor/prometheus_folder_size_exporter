@@ -5,8 +5,8 @@
 
 [![Crate](https://img.shields.io/crates/v/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratedown](https://img.shields.io/crates/d/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratelastdown](https://img.shields.io/crates/dv/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter)
 
-[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/releases/tag/0.3.0)
-[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.3.0.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.3.0.svg)
+[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/releases/tag/0.4.0)
+[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.3.0.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.4.0.svg)
 
 ## Intro
 
