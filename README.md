@@ -41,6 +41,7 @@ Start the binary with `-h` to get the complete syntax. The parameters are:
 | `-v` | no | <switch> | | Enable verbose mode.
 | `-p` | no | any valid port number | 9974 | Specify the serivce port. This is the port your Prometheus instance should point to.
 | `-i` | yes | a valid config json file | - | The configuration file. This json is detailed below (you can find an example here: [example.json](example.json)).
+| `-b` | no | Any number > 0 | Off | Enables the async storage calculation. The value specifies how often the calculation will be done. If not specified, the values will be calculated synchronously at each HTTP Get.
 
 Once started, the tool will listen on the specified port (or the default one, 9974, if not specified) and return a Prometheus valid response at the url `/metrics`. So to check if the tool is working properly simply browse the `http://localhost:9974` (or whichever port you choose).
 
