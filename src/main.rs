@@ -7,7 +7,9 @@ use hyper::Body;
 use std::env;
 use std::sync::Arc;
 mod options;
+mod state;
 use options::Options;
+pub use state::State;
 mod exporter_error;
 mod folder_scanner;
 mod render_to_prometheus;
@@ -15,9 +17,13 @@ use prometheus_exporter_base::prelude::*;
 
 async fn perform_request(
     _req: http::request::Request<Body>,
-    options: Arc<Options>,
+    state: Arc<Arc<State>>,
 ) -> Result<String, failure::Error> {
-    let results = options.folders_to_scan.scan()?;
+    let results = if state.options.background_poll_seconds.is_some() {
+        state.shared_vec.read().unwrap().clone()
+    } else {
+        state.options.folders_to_scan.scan()?
+    };
 
     let mut metric = PrometheusMetric::build()
         .with_name("folder_size")
@@ -28,7 +34,7 @@ async fn perform_request(
         .build();
 
     for result in results {
-        if let Some(user) = result.folder.user {
+        if let Some(user) = &result.folder.user {
             metric.render_and_append_instance(
                 &PrometheusInstance::new()
                     .with_label("path", result.folder.path.as_str())
@@ -88,18 +94,39 @@ async fn main() {
                 .help("verbose logging")
                 .takes_value(false),
         )
+        .arg(
+            Arg::with_name("background_poll_seconds")
+                .short("b")
+                .help("enables background scanning every <sec> seconds")
+                .required(false)
+                .takes_value(true),
+        )
         .get_matches();
 
     let options = Options::from_claps(&matches);
-
     if options.verbose {
         env::set_var("RUST_LOG", "prometheus_folder_size_exporter=trace");
     } else {
         env::set_var("RUST_LOG", "prometheus_folder_size_exporter=info");
     }
     env_logger::init();
-
     log::info!("using options: {:?}", options);
+
+    let state = Arc::new(State::new(options));
+
+    // start the background thread only
+    // if requested
+    if let Some(background_poll_seconds) = state.options.background_poll_seconds {
+        let state = state.clone();
+        std::thread::spawn(move || loop {
+            log::info!("starting background folder structure update");
+            let results = state.options.folders_to_scan.scan().unwrap();
+            *state.shared_vec.write().unwrap() = results;
+            log::info!("background folder structure update completed");
+
+            std::thread::sleep(background_poll_seconds);
+        });
+    }
 
     let bind = matches.value_of("port").unwrap();
     let bind = u16::from_str_radix(&bind, 10).expect("port must be a valid number");
@@ -107,8 +134,8 @@ async fn main() {
 
     log::info!("starting exporter on {}", addr);
 
-    prometheus_exporter_base::render_prometheus(addr, options, |request, options| {
-        Box::pin(perform_request(request, options))
+    prometheus_exporter_base::render_prometheus(addr, state, |request, state| {
+        Box::pin(perform_request(request, state))
     })
     .await
 }

@@ -7,11 +7,15 @@ pub(crate) struct Options {
     pub folders_file: String,
     pub verbose: bool,
     pub folders_to_scan: FolderScanner,
+    pub background_poll_seconds: Option<std::time::Duration>,
 }
 
 impl Options {
     pub fn from_claps(matches: &clap::ArgMatches<'_>) -> Options {
         let folders_file = matches.value_of("folders_file").unwrap().to_owned();
+        let background_poll_seconds = matches
+            .value_of("background_poll_seconds")
+            .map(|s| std::time::Duration::from_secs(s.parse().unwrap()));
 
         let mut file = File::open(&folders_file).unwrap();
         let mut file_contents = String::new();
@@ -22,6 +26,7 @@ impl Options {
             folders_file,
             verbose: matches.is_present("verbose"),
             folders_to_scan: FolderScanner::from_json(&file_contents).unwrap(),
+            background_poll_seconds,
         }
     }
 }
