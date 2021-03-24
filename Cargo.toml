@@ -22,9 +22,9 @@ clap                     = "2.32.0"
 serde_json               = "1.0.37"
 serde                    = "1.0.85"
 serde_derive             = "1.0.85"
-failure                  = "0.1.5"
-hyper                    = "0.13.9"
+thiserror		 = "1.0"
+hyper                    = "0.14"
 http                     = "0.2.1"
 tokio                    = { version = "0.2.0", features = ["full"] }
-prometheus_exporter_base = { version = "1.1.0", features = ["hyper_server"] }
+prometheus_exporter_base = { version = "1.2.0", features = ["hyper_server"] }
 

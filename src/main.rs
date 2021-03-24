@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate failure;
 use clap::Arg;
 use hyper::Body;
 use std::env;
@@ -14,12 +12,13 @@ mod exporter_error;
 mod folder_scanner;
 mod render_to_prometheus;
 use prometheus_exporter_base::prelude::*;
+use std::error::Error;
 use std::time::Duration;
 
 async fn perform_request(
     _req: http::request::Request<Body>,
     state: Arc<Arc<State>>,
-) -> Result<String, failure::Error> {
+) -> Result<String, Box<dyn Error + Send + Sync>> {
     let results = if state.options.background_poll_seconds.is_some() {
         // loop until we have some data.
         // This is needed because the first scan can take a lot of time
