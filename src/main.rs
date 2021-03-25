@@ -82,7 +82,7 @@ async fn perform_request(
 async fn main() {
     let matches = clap::App::new("prometheus_folder_size_exporter")
         .version("0.2.0")
-        .author("Francesco Cogno <francesco.cogno@outlook.com> & Guido Scatena <guido.scatena@unipi.it>")
+        .author("Francesco Cogno <francesco.cogno@outlook.com>")
         .arg(
             Arg::with_name("port")
                 .short("p")
