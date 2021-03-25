@@ -1,18 +1,20 @@
-#[derive(Debug, Fail)]
-pub(crate) enum ExporterError {
-    #[fail(display = "Hyper error: {}", e)]
-    Hyper { e: hyper::error::Error },
+use thiserror::Error;
 
-    #[fail(display = "http error: {}", e)]
+#[derive(Debug, Error)]
+pub(crate) enum ExporterError {
+    #[error("Hyper error: {}", e)]
+    Hyper { e: hyper::Error },
+
+    #[error("http error: {}", e)]
     Http { e: http::Error },
 
-    #[fail(display = "UTF-8 error: {}", e)]
+    #[error("UTF-8 error: {}", e)]
     UTF8 { e: std::string::FromUtf8Error },
 
-    #[fail(display = "JSON format error: {}", e)]
+    #[error("JSON format error: {}", e)]
     JSON { e: serde_json::error::Error },
 
-    #[fail(display = "IO Error: {}", e)]
+    #[error("IO Error: {}", e)]
     IO { e: std::io::Error },
 }
 
@@ -22,8 +24,8 @@ impl From<std::io::Error> for ExporterError {
     }
 }
 
-impl From<hyper::error::Error> for ExporterError {
-    fn from(e: hyper::error::Error) -> Self {
+impl From<hyper::Error> for ExporterError {
+    fn from(e: hyper::Error) -> Self {
         ExporterError::Hyper { e }
     }
 }

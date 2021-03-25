@@ -1,25 +1,25 @@
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate failure;
 use clap::Arg;
 use hyper::Body;
 use std::env;
 use std::sync::Arc;
 mod options;
 mod state;
+use clap::{crate_authors, crate_name, crate_version};
 use options::Options;
 pub use state::State;
 mod exporter_error;
 mod folder_scanner;
 mod render_to_prometheus;
 use prometheus_exporter_base::prelude::*;
+use std::error::Error;
 use std::time::Duration;
 
 async fn perform_request(
     _req: http::request::Request<Body>,
     state: Arc<Arc<State>>,
-) -> Result<String, failure::Error> {
+) -> Result<String, Box<dyn Error + Send + Sync>> {
     let results = if state.options.background_poll_seconds.is_some() {
         // loop until we have some data.
         // This is needed because the first scan can take a lot of time
@@ -81,9 +81,9 @@ async fn perform_request(
 
 #[tokio::main]
 async fn main() {
-    let matches = clap::App::new("prometheus_folder_size_exporter")
-        .version("0.2.0")
-        .author("Francesco Cogno <francesco.cogno@outlook.com> & Guido Scatena <guido.scatena@unipi.it>")
+    let matches = clap::App::new(crate_name!())
+        .version(crate_version!())
+        .author(crate_authors!())
         .arg(
             Arg::with_name("port")
                 .short("p")

@@ -5,8 +5,8 @@
 
 [![Crate](https://img.shields.io/crates/v/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratedown](https://img.shields.io/crates/d/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter) [![cratelastdown](https://img.shields.io/crates/dv/prometheus_folder_size_exporter.svg)](https://crates.io/crates/prometheus_folder_size_exporter)
 
-[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/releases/tag/0.4.1)
-[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.4.1.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.4.1.svg)
+[![release](https://img.shields.io/github/release/MindFlavor/prometheus_folder_size_exporter.svg)](https://github.com/MindFlavor/prometheus_folder_size_exporter/releases/tag/0.5.0)
+[![commitssince](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.5.0.svg)](https://img.shields.io/github/commits-since/mindflavor/prometheus_folder_size_exporter/0.5.0.svg)
 
 ## Intro
 
@@ -14,7 +14,7 @@ A Rust Prometheus exporter for folder size. This tool exports the folder size in
 
 ## Prerequisites 
 
-* You need [Rust](https://www.rust-lang.org/) to compile this code. Simply follow the instructions on Rust's website to install the toolchain. If you get wierd errors while compiling please try and update your Rust version first (I have developed it on `rustc 1.47.0-nightly (663d2f5cd 2020-08-22)`). 
+* You need [Rust](https://www.rust-lang.org/) to compile this code. Simply follow the instructions on Rust's website to install the toolchain. If you get wierd errors while compiling please try and update your Rust version first (I have developed it on `rustc 1.53.0-nightly (f82664191 2021-03-21)`). 
 
 ## Compilation
 
@@ -41,7 +41,7 @@ Start the binary with `-h` to get the complete syntax. The parameters are:
 | `-v` | no | <switch> | | Enable verbose mode.
 | `-p` | no | any valid port number | 9974 | Specify the serivce port. This is the port your Prometheus instance should point to.
 | `-i` | yes | a valid config json file | - | The configuration file. This json is detailed below (you can find an example here: [example.json](example.json)).
-| `-b` | no | Any number > 0 | Off | Enables the async storage calculation. The value specifies how often the calculation will be done. If not specified, the values will be calculated synchronously at each HTTP Get.
+| `-b` | no | Any number > 0 | Off | Enables the async storage calculation. The value specifies how often (in seconds) the calculation will be done. If not specified, the values will be calculated synchronously at each HTTP Get.
 
 Once started, the tool will listen on the specified port (or the default one, 9974, if not specified) and return a Prometheus valid response at the url `/metrics`. So to check if the tool is working properly simply browse the `http://localhost:9974` (or whichever port you choose).
 
