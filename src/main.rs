@@ -6,6 +6,7 @@ use std::env;
 use std::sync::Arc;
 mod options;
 mod state;
+use clap::{crate_authors, crate_name, crate_version};
 use options::Options;
 pub use state::State;
 mod exporter_error;
@@ -80,9 +81,9 @@ async fn perform_request(
 
 #[tokio::main]
 async fn main() {
-    let matches = clap::App::new("prometheus_folder_size_exporter")
-        .version("0.2.0")
-        .author("Francesco Cogno <francesco.cogno@outlook.com>")
+    let matches = clap::App::new(crate_name!())
+        .version(crate_version!())
+        .author(crate_authors!())
         .arg(
             Arg::with_name("port")
                 .short("p")
