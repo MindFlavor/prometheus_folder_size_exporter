@@ -500,7 +500,7 @@ dependencies = [
 
 [[package]]
 name = "prometheus_folder_size_exporter"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "clap",
  "env_logger 0.7.1",
