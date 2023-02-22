@@ -120,8 +120,8 @@ impl FolderScanner {
             log::trace!("scanning folder {:?}", folder);
 
             match folder.explode_depth {
-                0 => v_sizes.push(scan_folder_sum(&folder)?),
-                _ => v_sizes.extend_from_slice(&scan_folder_explode(&folder)?),
+                0 => v_sizes.push(scan_folder_sum(folder)?),
+                _ => v_sizes.extend_from_slice(&scan_folder_explode(folder)?),
             }
         }
         Ok(v_sizes)
