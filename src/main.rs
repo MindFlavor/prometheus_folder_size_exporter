@@ -18,7 +18,7 @@ use std::time::Duration;
 
 async fn perform_request(
     _req: http::request::Request<Body>,
-    state: Arc<Arc<State>>,
+    state: Arc<State>,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     let results = if state.options.background_poll_seconds.is_some() {
         // loop until we have some data.
@@ -122,7 +122,7 @@ async fn main() {
     env_logger::init();
     log::info!("using options: {:?}", options);
 
-    let state = Arc::new(State::new(options));
+    let state = State::new(options);
 
     // start the background thread only
     // if requested
@@ -139,12 +139,16 @@ async fn main() {
     }
 
     let bind = matches.value_of("port").unwrap();
-    let bind = u16::from_str_radix(&bind, 10).expect("port must be a valid number");
+    let bind = bind.parse::<u16>().expect("port must be a valid number");
     let addr = ([0, 0, 0, 0], bind).into();
-
     log::info!("starting exporter on {}", addr);
 
-    prometheus_exporter_base::render_prometheus(addr, state, |request, state| {
+    let server_options = ServerOptions {
+        addr,
+        authorization: Authorization::None,
+    };
+
+    prometheus_exporter_base::render_prometheus(server_options, state, |request, state| {
         Box::pin(perform_request(request, state))
     })
     .await

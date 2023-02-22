@@ -47,7 +47,15 @@ fn scan_folder_explode(
             if folder_to_scan.explode_depth == -1 || folder_to_scan.explode_depth > 1 {
                 v.extend_from_slice(&scan_folder_explode(&folder_inner)?);
             } else {
-                v.push(scan_folder_sum(&folder_inner)?);
+                scan_folder_sum(&folder_inner)
+                    .map(|res| v.push(res))
+                    .unwrap_or_else(|err| {
+                        log::warn!(
+                            "scan_folder_sum({}) failed due to error {:?}",
+                            folder_inner.path,
+                            err
+                        )
+                    })
             }
         } else {
             tot += entry.metadata()?.len();
@@ -67,7 +75,13 @@ fn scan_folder_sum(folder_to_scan: &FolderToScan) -> Result<FolderWithSize, std:
     log::trace!("scan_folder_sum({:?})", &folder_to_scan);
     let mut tot: u64 = 0;
 
+    log::trace!("before read_dir({:?})", folder_to_scan.path);
     for entry in read_dir(&folder_to_scan.path)? {
+        log::trace!(
+            "after read_dir({:?}) == entry {:?}",
+            folder_to_scan.path,
+            entry
+        );
         let entry = entry?;
 
         let folder_inner = FolderToScan {
@@ -78,9 +92,11 @@ fn scan_folder_sum(folder_to_scan: &FolderToScan) -> Result<FolderWithSize, std:
         };
 
         if entry.file_type()?.is_dir() && folder_to_scan.sum_remaining_subfolders {
-            tot += scan_folder_sum(&folder_inner)?.size;
+            tot += scan_folder_sum(&folder_inner)
+                .map(|res| res.size)
+                .unwrap_or(0);
         } else {
-            tot += entry.metadata()?.len();
+            tot += entry.metadata().map(|res| res.len()).unwrap_or(0);
         }
     }
 
@@ -120,8 +136,20 @@ impl FolderScanner {
             log::trace!("scanning folder {:?}", folder);
 
             match folder.explode_depth {
-                0 => v_sizes.push(scan_folder_sum(&folder)?),
-                _ => v_sizes.extend_from_slice(&scan_folder_explode(&folder)?),
+                0 => scan_folder_sum(folder)
+                    .map(|res| v_sizes.push(res))
+                    .unwrap_or_else(|err| {
+                        log::warn!("skipping summing {:?} due to error {:?}", folder.path, err)
+                    }),
+                _ => scan_folder_explode(folder)
+                    .map(|res| v_sizes.extend_from_slice(&res))
+                    .unwrap_or_else(|err| {
+                        log::warn!(
+                            "skipping exploding {:?} due to error {:?}",
+                            folder.path,
+                            err
+                        )
+                    }),
             }
         }
         Ok(v_sizes)
