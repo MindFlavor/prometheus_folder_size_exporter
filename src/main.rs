@@ -37,7 +37,7 @@ async fn perform_request(
 
     let mut metric = PrometheusMetric::build()
         .with_name("folder_size_bytes")
-        .with_metric_type(MetricType::Counter)
+        .with_metric_type(MetricType::Gauge)
         .with_help(
             "Size of the folder, including the subfolders if \"explode_depth\" is zero and \"sum_remaining_subfolders\" is true" 
         )
